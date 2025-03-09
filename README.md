@@ -19,6 +19,10 @@ Then in home folder build the Spring Boot application using Maven
   mvn clean package
   ```
 
+- ## By IDE
+
+  To run the application, execute PayApplication from your IDE
+
 - ## By CLI
   Run
   ```bash
