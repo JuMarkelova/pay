@@ -14,10 +14,14 @@ If you haven't cloned the repository, run the following command
 To work with a sandbox API put your actual token to [application.properties](src/main/resources/application.properties)
 payment.api.token=put-your-token.
 
-Then in home folder build the Spring Boot application using Maven
+Then in home folder build the Spring Boot application using Maven with running tests
 
   ```bash
   mvn clean package
+  ```
+Or without running tests
+  ```bash
+  mvn package -DskipTests=true
   ```
 
 - ## By IDE
