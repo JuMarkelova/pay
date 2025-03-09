@@ -25,8 +25,12 @@ public class PayServiceTests {
 
     @Test
     void createPaymentSuccessful() {
-        PaymentRequest paymentRequest = new PaymentRequest("DEPOSIT", "1000", "EUR", new Customer());
-
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .paymentType("DEPOSIT")
+                .amount("1000")
+                .currency("EUR")
+                .customer(new Customer())
+                .build();
         webTestClient.post()
                 .uri(baseUrl + "/payments")
                 .header("Authorization", "Bearer " + token)
@@ -42,11 +46,12 @@ public class PayServiceTests {
 
     @Test
     void createPaymentFailureBadRequest() {
-        PaymentRequest paymentRequest = new PaymentRequest(
-                "DEPOSIT",
-                "-10",
-                "EUR",
-                new Customer());
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .paymentType("DEPOSIT")
+                .amount("-100")
+                .currency("EUR")
+                .customer(new Customer())
+                .build();
 
         webTestClient.post()
                 .uri(baseUrl + "/payments")

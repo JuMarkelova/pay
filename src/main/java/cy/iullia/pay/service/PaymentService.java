@@ -24,11 +24,12 @@ public class PaymentService {
     }
 
     public String createPayment(String amount) {
-        PaymentRequest paymentRequest = new PaymentRequest(
-                "DEPOSIT",
-                amount,
-                "EUR",
-                new Customer());
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .paymentType("DEPOSIT")
+                .amount(amount)
+                .currency("EUR")
+                .customer(new Customer())
+                .build();
         try {
             PaymentResponse response = webClient.post()
                     .uri(baseUrl + "/payments")
@@ -38,13 +39,24 @@ public class PaymentService {
                     .bodyToMono(PaymentResponse.class)
                     .block();
 
+            if (response == null) {
+                throw new RuntimeException("Something went wrong, we're working on it");
+            }
             return response.getResult().getRedirectUrl();
         } catch (WebClientResponseException e) {
-            throw new RuntimeException("Ошибка API: " + e.getResponseBodyAs(ErrorPaymentResponse.class).getStatus() + " " +
-                    e.getResponseBodyAs(ErrorPaymentResponse.class).getError() + " " +
-                    e.getResponseBodyAs(ErrorPaymentResponse.class).getErrors().getFirst().getDefaultMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("Неизвестная ошибка: " + e.getMessage());
+            ErrorPaymentResponse errorResponse = e.getResponseBodyAs(ErrorPaymentResponse.class);
+            if (errorResponse == null) {
+                throw new RuntimeException("Something went wrong, we're working on it");
+            }
+            String status = errorResponse.getStatus();
+            String error = errorResponse.getError();
+            String message;
+            if (status.equals("400")) {
+                message = errorResponse.getErrors().getFirst().getDefaultMessage();
+            } else {
+                message = "";
+            }
+            throw new RuntimeException(status + " " + error + " " + message);
         }
     }
 }
