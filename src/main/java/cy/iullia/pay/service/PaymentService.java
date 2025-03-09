@@ -4,12 +4,14 @@ import cy.iullia.pay.dto.Customer;
 import cy.iullia.pay.dto.ErrorPaymentResponse;
 import cy.iullia.pay.dto.PaymentRequest;
 import cy.iullia.pay.dto.PaymentResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
+@Slf4j
 public class PaymentService {
     private final WebClient webClient;
 
@@ -31,6 +33,7 @@ public class PaymentService {
                 .customer(new Customer())
                 .build();
         try {
+            log.info("Send response with body {}", paymentRequest);
             PaymentResponse response = webClient.post()
                     .uri(baseUrl + "/payments")
                     .header("Authorization", "Bearer " + token)
@@ -40,23 +43,24 @@ public class PaymentService {
                     .block();
 
             if (response == null) {
-                throw new RuntimeException("Something went wrong, we're working on it");
+                log.error("Payment Response is null");
+                throw new IllegalStateException("Упс, что-то пошло не так. Мы уже работает над этим!");
             }
             return response.getResult().getRedirectUrl();
         } catch (WebClientResponseException e) {
             ErrorPaymentResponse errorResponse = e.getResponseBodyAs(ErrorPaymentResponse.class);
             if (errorResponse == null) {
-                throw new RuntimeException("Something went wrong, we're working on it");
+                log.error("Error Payment Response is null");
+                throw new IllegalStateException("Упс, что-то пошло не так. Мы уже работает над этим!");
             }
             String status = errorResponse.getStatus();
             String error = errorResponse.getError();
-            String message;
+            String message = "";
             if (status.equals("400")) {
                 message = errorResponse.getErrors().getFirst().getDefaultMessage();
-            } else {
-                message = "";
             }
-            throw new RuntimeException(status + " " + error + " " + message);
+            log.error("{} {} {}", status, error, message);
+            throw new IllegalStateException("Что-то пошло не так, обратитесь в поддержку или попробуйте еще раз. " + message);
         }
     }
 }

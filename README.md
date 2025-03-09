@@ -5,7 +5,7 @@ Before you proceed, ensure you have the following installed:
 - Java 22
 - Docker
 
-If you haven't already cloned the repository, run the following command
+If you haven't cloned the repository, run the following command
 
   ```bash
   git clone https://github.com/JuMarkelova/pay.git
@@ -13,6 +13,7 @@ If you haven't already cloned the repository, run the following command
 
 To work with a sandbox API put your actual token to [application.properties](src/main/resources/application.properties)
 payment.api.token=put-your-token.
+
 Then in home folder build the Spring Boot application using Maven
 
   ```bash
@@ -21,8 +22,14 @@ Then in home folder build the Spring Boot application using Maven
 
 - ## By IDE
 
-  To run the application, execute PayApplication from your IDE
+  To run the application, execute PayApplication from your IDE.
 
+  After running the application, it will be available on
+  ```bash
+  http://localhost:8080
+  ```
+  Note: Ensure that port 8080 is free and not in use by another application.
+  If the port is already occupied, you can change the port by modifying the [application.properties](src/main/resources/application.properties) - server.port.
 - ## By CLI
   Run
   ```bash
@@ -33,7 +40,7 @@ Then in home folder build the Spring Boot application using Maven
   http://localhost:8080
   ```
   Note: Ensure that port 8080 is free and not in use by another application.
-  If the port is already occupied, you can change the port by modifying the application.properties - server.port.
+  If the port is already occupied, you can change the port by modifying the [application.properties](src/main/resources/application.properties) - server.port.
 - ## By Docker
   In the project directory, build the Docker image by running
   ```bash
